@@ -1,42 +1,45 @@
 import { mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
 import {
+  assertSafeUrl,
+  fetchFollowingRedirects,
   RegionSchema,
   ScanResultSchema,
   type Region,
   type ScanResult,
+  type SsrfOptions,
 } from "@acs/shared";
 import { capturePage } from "./browser.js";
 import { runChecks } from "./checks/index.js";
-import { assertSafeUrl, type SsrfOptions } from "./ssrf.js";
 
 const PRIVACY_POLICY_MAX_BYTES = 100 * 1024;
+export const SCAN_TIMEOUT_MS = 120_000;
 
 export type ScanOptions = SsrfOptions & {
   region?: Region;
   screenshotPath?: string;
+  timeoutMs?: number;
 };
 
 async function fetchPrivacyPolicyText(
   url: string,
   ssrf: SsrfOptions,
 ): Promise<string | undefined> {
-  await assertSafeUrl(url, ssrf);
-  const response = await fetch(url, { redirect: "follow" });
+  const response = await fetchFollowingRedirects(url, ssrf);
   const text = await response.text();
   return text.slice(0, PRIVACY_POLICY_MAX_BYTES);
 }
 
-export async function scan(
+async function scanOnce(
   url: string,
-  options: ScanOptions = {},
+  options: ScanOptions,
 ): Promise<ScanResult> {
   const region = options.region
     ? RegionSchema.parse(options.region)
     : undefined;
   await assertSafeUrl(url, options);
 
-  const captured = await capturePage(url);
+  const captured = await capturePage(url, options);
   try {
     if (options.screenshotPath) {
       await mkdir(dirname(options.screenshotPath), { recursive: true });
@@ -80,5 +83,27 @@ export async function scan(
     });
   } finally {
     await captured.browser.close();
+  }
+}
+
+export async function scan(
+  url: string,
+  options: ScanOptions = {},
+): Promise<ScanResult> {
+  const timeoutMs = options.timeoutMs ?? SCAN_TIMEOUT_MS;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      scanOnce(url, options),
+      new Promise<ScanResult>((_, reject) => {
+        timer = setTimeout(() => {
+          reject(
+            new Error("The page did not finish loading in time. Try again."),
+          );
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 }

@@ -10,9 +10,9 @@ const RuleFileSchema = z.object({
   rules: z.array(RuleSchema),
 });
 
-export const bundledRulesDir = fileURLToPath(
-  new URL("../rules", import.meta.url),
-);
+export const bundledRulesDir =
+  process.env.RULES_DIR ??
+  fileURLToPath(new URL("../rules", import.meta.url));
 
 export class RuleLoadError extends Error {
   constructor(message: string) {

@@ -11,6 +11,8 @@
     "format:check": "prettier --check .",
     "scan": "pnpm --filter @acs/scanner scan",
     "evaluate": "pnpm --filter @acs/rules evaluate",
+    "api": "pnpm --filter @acs/api start",
+    "synth": "pnpm --filter @acs/infra synth",
     "browsers": "pnpm --filter @acs/scanner install-browsers"
   },
   "engines": {

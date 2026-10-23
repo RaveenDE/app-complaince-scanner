@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@acs/shared": "workspace:*",
+    "@aws-sdk/client-s3": "^3.699.0",
     "@axe-core/playwright": "^4.10.2",
     "playwright": "^1.49.1",
     "zod": "^3.24.1"

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  CreateScanRequestSchema,
   FindingSchema,
+  ReportSchema,
   reviewStatusFromRule,
   RuleSchema,
 } from "./schemas.js";
@@ -61,5 +63,38 @@ describe("review status", () => {
 
     expect(reviewStatusFromRule(rule)).toBe("not_yet_reviewed");
     expect(formatReviewStatus(rule.last_verified)).toBe(NOT_YET_REVIEWED_LABEL);
+  });
+});
+
+describe("CreateScanRequest and Report", () => {
+  it("parses a create-scan request and a key-only report", () => {
+    const request = CreateScanRequestSchema.parse({
+      url: "https://example.com",
+      ownerConfirmed: true,
+      answers: {
+        regions: ["EU"],
+        collectsPersonalData: false,
+        collectsLocationPhotosContacts: false,
+        minorsCanUseApp: false,
+        takesPayments: false,
+        hasSubscriptions: false,
+        sendsMarketingEmail: false,
+        sendsSms: false,
+        usesAnalyticsAdsOrSessionReplay: false,
+        hasAiFeaturesOrChat: false,
+        acceptsUserUploadsOrReviews: false,
+        hasPrivacyPolicyToday: false,
+        hasTermsToday: false,
+        hasCookieBannerToday: false,
+      },
+    });
+    expect(request.ownerConfirmed).toBe(true);
+
+    const report = ReportSchema.parse({
+      issues: [],
+      screenshotKey: "scans/abc/screenshot.png",
+    });
+    expect(report.screenshotKey).toBe("scans/abc/screenshot.png");
+    expect(report).not.toHaveProperty("privacyPolicyText");
   });
 });

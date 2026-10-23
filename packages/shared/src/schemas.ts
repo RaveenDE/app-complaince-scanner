@@ -145,6 +145,22 @@ export const ScanStatusSchema = z.enum([
 ]);
 export type ScanStatus = z.infer<typeof ScanStatusSchema>;
 
+export const CreateScanRequestSchema = z.object({
+  url: z.string().min(1),
+  answers: AnswersSchema,
+  ownerConfirmed: z.boolean(),
+});
+export type CreateScanRequest = z.infer<typeof CreateScanRequestSchema>;
+
+export const ReportSchema = z.object({
+  issues: z.array(IssueSchema),
+  screenshotKey: z.string().optional(),
+  policyTextKey: z.string().optional(),
+  finalUrl: z.string().optional(),
+  title: z.string().optional(),
+});
+export type Report = z.infer<typeof ReportSchema>;
+
 export const ScanSchema = z.object({
   id: z.string().min(1),
   url: z.string().min(1),
@@ -154,5 +170,9 @@ export const ScanSchema = z.object({
   updatedAt: z.string().optional(),
   errorMessage: z.string().optional(),
   ownerConfirmed: z.boolean(),
+  clientIp: z.string().optional(),
+  screenshotKey: z.string().optional(),
+  policyTextKey: z.string().optional(),
+  report: ReportSchema.optional(),
 });
 export type Scan = z.infer<typeof ScanSchema>;

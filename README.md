@@ -8,7 +8,7 @@ Findings describe **likely** issues and **detected** indicators. They do not mea
 
 ## Status
 
-Stage 2: scanner CLI plus a deterministic rules engine. The API and report UI are not implemented yet.
+Stage 3: scanner CLI, deterministic rules engine, and a local scan API. The report UI is not implemented yet.
 
 ## Requirements
 
@@ -37,17 +37,31 @@ Copy `.env.example` to `.env` if you need local environment variables. Do not co
 | `pnpm browsers` | Install Chromium for the scanner (project-local `.playwright`) |
 | `pnpm scan -- <url> --region EU --out result.json --confirm-ownership` | Scan a site you own or are authorized to scan |
 | `pnpm evaluate -- --scan result.json --answers packages/rules/examples/answers.json` | Rank scan findings and questionnaire answers |
+| `pnpm api` | Start the local scan API (`POST /scans`, `GET /scans/:id`) |
+| `pnpm synth` | Synthesize the CDK stack (does not deploy) |
 
 `--confirm-ownership` is required. The CLI launches Chromium with a German locale and Europe/Berlin timezone, records requests and cookies without clicking, and writes a JSON result validated against the shared schema.
 
 `pnpm evaluate` matches that result and a questionnaire JSON to versioned YAML rules. Matching is deterministic code. An LLM never decides whether a rule applies. Rules with a null `last_verified` date show as **Not yet reviewed**. This is risk screening, not legal advice.
+
+`pnpm api` stores scan records under `.data/` (gitignored). `POST /scans` requires `ownerConfirmed: true`. The pipeline is SafetyCheck → Scan → Evaluate → Explain (passthrough) → Finalize. `ACS_ALLOW_PRIVATE_ADDRESSES=true` is for local fixture tests only; never set it in production.
+
+```bash
+curl -s -X POST http://127.0.0.1:8787/scans \
+  -H "content-type: application/json" \
+  -d "{\"url\":\"https://example.com\",\"ownerConfirmed\":true,\"answers\":$(cat packages/rules/examples/answers.json)}"
+curl -s http://127.0.0.1:8787/scans/<id>
+```
+
+`pnpm --filter @acs/infra synth` writes a CloudFormation template to `cdk.out`. It does not deploy.
 
 ## Workspace
 
 | Path | Package | Role |
 | --- | --- | --- |
 | `apps/web` | `@acs/web` | Next.js UI (placeholder page in Stage 0) |
-| `services/scanner` | `@acs/scanner` | Headless-browser scanner CLI |
+| `services/scanner` | `@acs/scanner` | Headless-browser scanner CLI and Lambda container |
+| `services/api` | `@acs/api` | Local HTTP API, pipeline, and Lambda wrappers |
 | `packages/rules` | `@acs/rules` | Versioned YAML rules and evaluate engine |
-| `packages/shared` | `@acs/shared` | Shared types and zod schemas |
-| `infra` | `@acs/infra` | AWS CDK (stub) |
+| `packages/shared` | `@acs/shared` | Shared types, zod schemas, and SSRF checks |
+| `infra` | `@acs/infra` | AWS CDK (API Gateway, Lambda, Step Functions, DynamoDB, S3) |

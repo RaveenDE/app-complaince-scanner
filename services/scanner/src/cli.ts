@@ -1,9 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { RegionSchema, ScanResultSchema } from "@acs/shared";
+import { RegionSchema, ScanResultSchema, SsrfError } from "@acs/shared";
 import { scan } from "./scan.js";
-import { SsrfError } from "./ssrf.js";
 
 function screenshotPathFor(outPath: string): string {
   return outPath.toLowerCase().endsWith(".json")

@@ -1,5 +1,10 @@
 import "./browsers-path.js";
-import type { CapturedCookie, CapturedRequest } from "@acs/shared";
+import {
+  assertSafeUrl,
+  type CapturedCookie,
+  type CapturedRequest,
+  type SsrfOptions,
+} from "@acs/shared";
 import {
   chromium,
   type Browser,
@@ -27,7 +32,10 @@ async function gotoAndWait(page: Page, url: string): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 3_000));
 }
 
-export async function capturePage(url: string): Promise<CapturedPage> {
+export async function capturePage(
+  url: string,
+  ssrf: SsrfOptions = {},
+): Promise<CapturedPage> {
   const browser = await chromium.launch({ headless: true });
   try {
     const context = await browser.newContext({
@@ -36,6 +44,15 @@ export async function capturePage(url: string): Promise<CapturedPage> {
     });
     const page = await context.newPage();
     const requests: CapturedRequest[] = [];
+
+    await page.route("**/*", async (route) => {
+      try {
+        await assertSafeUrl(route.request().url(), ssrf);
+        await route.continue();
+      } catch {
+        await route.abort("blockedbyclient");
+      }
+    });
 
     page.on("request", (request) => {
       requests.push({

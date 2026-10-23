@@ -10,6 +10,8 @@ export default tseslint.config(
       "**/.next/**",
       "**/cdk.out/**",
       "**/coverage/**",
+      "**/infra/lambda-assets/**",
+      "**/services/scanner/lambda.cjs",
       "pnpm-lock.yaml",
     ],
   },

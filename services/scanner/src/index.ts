@@ -1,2 +1,2 @@
-export { scan, type ScanOptions } from "./scan.js";
-export { assertSafeUrl, SsrfError } from "./ssrf.js";
+export { serveFixture, type FixtureServer } from "./fixture-server.js";
+export { scan, SCAN_TIMEOUT_MS, type ScanOptions } from "./scan.js";

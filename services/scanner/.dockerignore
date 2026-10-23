@@ -1,0 +1,5 @@
+node_modules
+.playwright
+result.json
+result.png
+**/*.test.ts
