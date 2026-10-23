@@ -19,7 +19,7 @@ Stage 1: standalone scanner CLI. The rules engine, API, and report UI are not im
 
 ```bash
 pnpm install
-pnpm --filter @acs/scanner exec playwright install chromium
+pnpm browsers
 ```
 
 Copy `.env.example` to `.env` if you need local environment variables. Do not commit secrets.
@@ -34,6 +34,7 @@ Copy `.env.example` to `.env` if you need local environment variables. Do not co
 | `pnpm typecheck` | Run `tsc --noEmit` in every package |
 | `pnpm format` | Format files with Prettier |
 | `pnpm --filter @acs/web dev` | Start the Next.js placeholder app |
+| `pnpm browsers` | Install Chromium for the scanner (project-local `.playwright`) |
 | `pnpm scan -- <url> --region EU --out result.json --confirm-ownership` | Scan a site you own or are authorized to scan |
 
 `--confirm-ownership` is required. The CLI launches Chromium with a German locale and Europe/Berlin timezone, records requests and cookies without clicking, and writes a JSON result validated against the shared schema.

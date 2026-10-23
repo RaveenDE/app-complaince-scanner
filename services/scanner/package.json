@@ -10,6 +10,7 @@
   },
   "scripts": {
     "scan": "tsx src/cli.ts",
+    "install-browsers": "tsx src/install-browsers.ts",
     "test": "vitest run",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"

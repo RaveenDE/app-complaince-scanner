@@ -9,7 +9,8 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "scan": "pnpm --filter @acs/scanner scan"
+    "scan": "pnpm --filter @acs/scanner scan",
+    "browsers": "pnpm --filter @acs/scanner install-browsers"
   },
   "engines": {
     "node": ">=20"

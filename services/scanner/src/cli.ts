@@ -69,11 +69,22 @@ async function main(): Promise<void> {
   }
 }
 
+function userSafeError(error: unknown): string {
+  if (error instanceof SsrfError) return error.message;
+  if (error instanceof Error && error.name === "TimeoutError") {
+    return "The page did not finish loading in time. Try again.";
+  }
+  const message = error instanceof Error ? error.message : "";
+  if (/executable does(?:n't| not) exist/i.test(message)) {
+    return "Chromium is not installed. Run: pnpm browsers";
+  }
+  const firstLine = message.split("\n")[0]?.trim();
+  return firstLine
+    ? `The scan failed: ${firstLine}`
+    : "The scan failed. Check the URL and try again.";
+}
+
 main().catch((error: unknown) => {
-  const message =
-    error instanceof SsrfError
-      ? error.message
-      : "The scan failed. Check the URL and try again.";
-  console.error(message);
+  console.error(userSafeError(error));
   process.exitCode = 1;
 });
