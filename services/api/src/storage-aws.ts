@@ -4,7 +4,11 @@ import {
   PutItemCommand,
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import {
   DynamoDBDocumentClient,
   GetCommand,
@@ -12,6 +16,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { ScanSchema, type Scan } from "@acs/shared";
 import {
+  contentTypeForKey,
   RATE_MAX,
   RATE_WINDOW_MS,
   type ScanStore,
@@ -91,6 +96,28 @@ export class AwsScanStore implements ScanStore {
       }),
     );
     return key;
+  }
+
+  async getObject(
+    key: string,
+  ): Promise<{ body: Buffer; contentType: string } | null> {
+    try {
+      const result = await this.clients.s3.send(
+        new GetObjectCommand({
+          Bucket: this.clients.bucket,
+          Key: key,
+        }),
+      );
+      const bytes = result.Body
+        ? Buffer.from(await result.Body.transformToByteArray())
+        : Buffer.alloc(0);
+      return {
+        body: bytes,
+        contentType: result.ContentType ?? contentTypeForKey(key),
+      };
+    } catch {
+      return null;
+    }
   }
 
   async tryAcquireIpLock(ip: string): Promise<boolean> {

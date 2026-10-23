@@ -88,4 +88,18 @@ describe("API request handling", () => {
     expect(response.body).toContain("private");
     expect(started).toHaveLength(0);
   });
+
+  it("returns 404 when a screenshot is not stored yet", async () => {
+    const response = await handleRequest(
+      {
+        method: "GET",
+        path: "/scans/missing/screenshot",
+        headers: {},
+        clientIp: "203.0.113.13",
+      },
+      store,
+      runner,
+    );
+    expect(response.status).toBe(404);
+  });
 });

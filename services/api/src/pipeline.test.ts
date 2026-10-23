@@ -13,6 +13,10 @@ const fixturesRoot = fileURLToPath(
   new URL("../../scanner/fixtures", import.meta.url),
 );
 
+function responseText(body: string | Buffer): string {
+  return typeof body === "string" ? body : body.toString("utf8");
+}
+
 describe("pipeline e2e", () => {
   let tmp: string;
   let store: LocalScanStore;
@@ -54,7 +58,7 @@ describe("pipeline e2e", () => {
       { allowPrivateAddresses: true },
     );
     expect(created.status).toBe(201);
-    const id = JSON.parse(created.body) as { id: string };
+    const id = JSON.parse(responseText(created.body)) as { id: string };
     expect(id.id).toBeTruthy();
 
     const deadline = Date.now() + 90_000;
@@ -74,7 +78,7 @@ describe("pipeline e2e", () => {
         store,
         { start() {} },
       );
-      body = JSON.parse(got.body) as typeof body;
+      body = JSON.parse(responseText(got.body)) as typeof body;
       if (body.status === "done" || body.status === "failed") break;
       await new Promise((resolve) => setTimeout(resolve, 500));
     }

@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { evaluate, loadRules } from "@acs/rules";
 import { scan, SCAN_TIMEOUT_MS } from "@acs/scanner";
-import { assertSafeUrl } from "@acs/shared";
+import { assertSafeUrl } from "@acs/shared/ssrf";
 import { explainIssues } from "./explain.js";
 import { userSafeError } from "./errors.js";
 import type { ScanStore } from "./storage.js";

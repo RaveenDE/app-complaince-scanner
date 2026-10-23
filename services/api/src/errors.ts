@@ -1,4 +1,4 @@
-import { SsrfError } from "@acs/shared";
+import { SsrfError } from "@acs/shared/ssrf";
 import { ZodError } from "zod";
 
 export class HttpError extends Error {

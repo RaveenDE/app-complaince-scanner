@@ -8,7 +8,7 @@ Findings describe **likely** issues and **detected** indicators. They do not mea
 
 ## Status
 
-Stage 3: scanner CLI, deterministic rules engine, and a local scan API. The report UI is not implemented yet.
+Stage 4: scanner CLI, rules engine, local API, and a web report UI. PDF export uses a print stylesheet plus Playwright.
 
 ## Requirements
 
@@ -33,11 +33,12 @@ Copy `.env.example` to `.env` if you need local environment variables. Do not co
 | `pnpm lint` | Run ESLint in every package |
 | `pnpm typecheck` | Run `tsc --noEmit` in every package |
 | `pnpm format` | Format files with Prettier |
-| `pnpm --filter @acs/web dev` | Start the Next.js placeholder app |
+| `pnpm web` | Start the Next.js app (questionnaire and report) |
 | `pnpm browsers` | Install Chromium for the scanner (project-local `.playwright`) |
 | `pnpm scan -- <url> --region EU --out result.json --confirm-ownership` | Scan a site you own or are authorized to scan |
 | `pnpm evaluate -- --scan result.json --answers packages/rules/examples/answers.json` | Rank scan findings and questionnaire answers |
 | `pnpm api` | Start the local scan API (`POST /scans`, `GET /scans/:id`) |
+| `pnpm fixture -- bad-site` | Serve the scanner fixture used by local UI tests |
 | `pnpm synth` | Synthesize the CDK stack (does not deploy) |
 
 `--confirm-ownership` is required. The CLI launches Chromium with a German locale and Europe/Berlin timezone, records requests and cookies without clicking, and writes a JSON result validated against the shared schema.
@@ -53,13 +54,15 @@ curl -s -X POST http://127.0.0.1:8787/scans \
 curl -s http://127.0.0.1:8787/scans/<id>
 ```
 
+The web UI is at `http://127.0.0.1:3000`. Start `pnpm api` in another terminal first. For a local fixture scan set `ACS_ALLOW_PRIVATE_ADDRESSES=true` on the API, run `pnpm fixture -- bad-site`, and paste that URL into `/scan/new`. Download PDF from the report page.
+
 `pnpm --filter @acs/infra synth` writes a CloudFormation template to `cdk.out`. It does not deploy.
 
 ## Workspace
 
 | Path | Package | Role |
 | --- | --- | --- |
-| `apps/web` | `@acs/web` | Next.js UI (placeholder page in Stage 0) |
+| `apps/web` | `@acs/web` | Next.js questionnaire, report, and PDF export |
 | `services/scanner` | `@acs/scanner` | Headless-browser scanner CLI and Lambda container |
 | `services/api` | `@acs/api` | Local HTTP API, pipeline, and Lambda wrappers |
 | `packages/rules` | `@acs/rules` | Versioned YAML rules and evaluate engine |

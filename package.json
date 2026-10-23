@@ -12,6 +12,8 @@
     "scan": "pnpm --filter @acs/scanner scan",
     "evaluate": "pnpm --filter @acs/rules evaluate",
     "api": "pnpm --filter @acs/api start",
+    "web": "pnpm --filter @acs/web dev",
+    "fixture": "pnpm --filter @acs/scanner fixture",
     "synth": "pnpm --filter @acs/infra synth",
     "browsers": "pnpm --filter @acs/scanner install-browsers"
   },

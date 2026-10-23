@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, normalize, resolve } from "node:path";
 import { ScanSchema, type Scan } from "@acs/shared";
 import {
+  contentTypeForKey,
   RATE_MAX,
   RATE_WINDOW_MS,
   type ScanStore,
@@ -63,6 +64,17 @@ export class LocalScanStore implements ScanStore {
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, body);
     return key;
+  }
+
+  async getObject(
+    key: string,
+  ): Promise<{ body: Buffer; contentType: string } | null> {
+    try {
+      const body = await readFile(this.objectPath(normalize(key)));
+      return { body, contentType: contentTypeForKey(key) };
+    } catch {
+      return null;
+    }
   }
 
   async tryAcquireIpLock(ip: string): Promise<boolean> {

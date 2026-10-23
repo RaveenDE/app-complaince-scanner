@@ -1,14 +1,16 @@
 import { mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
 import {
-  assertSafeUrl,
-  fetchFollowingRedirects,
   RegionSchema,
   ScanResultSchema,
   type Region,
   type ScanResult,
-  type SsrfOptions,
 } from "@acs/shared";
+import {
+  assertSafeUrl,
+  fetchFollowingRedirects,
+  type SsrfOptions,
+} from "@acs/shared/ssrf";
 import { capturePage } from "./browser.js";
 import { runChecks } from "./checks/index.js";
 

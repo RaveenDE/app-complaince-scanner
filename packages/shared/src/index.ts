@@ -44,15 +44,3 @@ export type {
   ScanStatus,
   Severity,
 } from "./schemas.js";
-export {
-  assertSafeRedirectChain,
-  assertSafeUrl,
-  decodeEncodedIPv4,
-  fetchFollowingRedirects,
-  isPrivateIp,
-  isPrivateIPv4,
-  isPrivateIPv6,
-  MAX_REDIRECTS,
-  SsrfError,
-} from "./ssrf.js";
-export type { DnsLookup, SsrfOptions } from "./ssrf.js";

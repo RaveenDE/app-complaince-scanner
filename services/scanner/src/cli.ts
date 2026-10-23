@@ -1,7 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { RegionSchema, ScanResultSchema, SsrfError } from "@acs/shared";
+import { RegionSchema, ScanResultSchema } from "@acs/shared";
+import { SsrfError } from "@acs/shared/ssrf";
 import { scan } from "./scan.js";
 
 function screenshotPathFor(outPath: string): string {

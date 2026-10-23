@@ -38,6 +38,9 @@ describe("LocalScanStore", () => {
     });
     expect(updated.screenshotKey).toBe("scans/scan-1/screenshot.png");
     expect(updated.report).toBeUndefined();
+    const object = await store.getObject(key);
+    expect(object?.contentType).toBe("image/png");
+    expect(object?.body.toString()).toBe("png");
   });
 
   it("locks one active scan per IP", async () => {

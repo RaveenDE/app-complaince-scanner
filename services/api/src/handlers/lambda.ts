@@ -59,9 +59,13 @@ export async function handler(
     { allowPrivateAddresses: allowPrivateFromEnv() },
   );
 
+  const binary = Buffer.isBuffer(response.body);
   return {
     statusCode: response.status,
     headers: response.headers,
-    body: response.body,
+    body: binary
+      ? response.body.toString("base64")
+      : (response.body as string),
+    isBase64Encoded: binary,
   };
 }

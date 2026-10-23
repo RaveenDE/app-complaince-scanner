@@ -1,10 +1,6 @@
 import "./browsers-path.js";
-import {
-  assertSafeUrl,
-  type CapturedCookie,
-  type CapturedRequest,
-  type SsrfOptions,
-} from "@acs/shared";
+import type { CapturedCookie, CapturedRequest } from "@acs/shared";
+import { assertSafeUrl, type SsrfOptions } from "@acs/shared/ssrf";
 import {
   chromium,
   type Browser,

@@ -1,9 +1,6 @@
 import { evaluate, loadRules } from "@acs/rules";
-import {
-  assertSafeUrl,
-  ScanResultSchema,
-  type Issue,
-} from "@acs/shared";
+import { ScanResultSchema, type Issue } from "@acs/shared";
+import { assertSafeUrl } from "@acs/shared/ssrf";
 import { explainIssues } from "../explain.js";
 import { userSafeError } from "../errors.js";
 import {

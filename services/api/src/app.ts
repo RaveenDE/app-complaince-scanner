@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
 import {
-  assertSafeUrl,
   CreateScanRequestSchema,
   PRODUCT_DISCLAIMER,
   type Scan,
 } from "@acs/shared";
+import { assertSafeUrl } from "@acs/shared/ssrf";
 import { HttpError, userSafeError } from "./errors.js";
 import type { ScanStore } from "./storage.js";
 
@@ -27,7 +27,7 @@ export type HttpRequest = {
 export type HttpResponse = {
   status: number;
   headers: Record<string, string>;
-  body: string;
+  body: string | Buffer;
 };
 
 const JSON_HEADERS = {
@@ -61,6 +61,10 @@ export async function handleRequest(
   try {
     if (request.method === "POST" && request.path === "/scans") {
       return await createScan(request, store, runner, options);
+    }
+    const shotMatch = /^\/scans\/([^/]+)\/screenshot$/.exec(request.path);
+    if (request.method === "GET" && shotMatch?.[1]) {
+      return await getScreenshot(shotMatch[1], store);
     }
     const getMatch = /^\/scans\/([^/]+)$/.exec(request.path);
     if (request.method === "GET" && getMatch?.[1]) {
@@ -130,4 +134,23 @@ async function getScan(id: string, store: ScanStore): Promise<HttpResponse> {
   const scan = await store.getScan(id);
   if (!scan) throw new HttpError(404, "Scan not found.");
   return json(200, publicScan(scan));
+}
+
+async function getScreenshot(
+  id: string,
+  store: ScanStore,
+): Promise<HttpResponse> {
+  const scan = await store.getScan(id);
+  if (!scan) throw new HttpError(404, "Scan not found.");
+  if (!scan.screenshotKey) throw new HttpError(404, "No screenshot yet.");
+  const object = await store.getObject(scan.screenshotKey);
+  if (!object) throw new HttpError(404, "No screenshot yet.");
+  return {
+    status: 200,
+    headers: {
+      "content-type": object.contentType,
+      "cache-control": "private, max-age=3600",
+    },
+    body: object.body,
+  };
 }
