@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "allowJs": true,
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "plugins": [{ "name": "next" }],
+    "paths": { "@/*": ["./src/*"] },
+    "incremental": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": ["src", "next-env.d.ts", "vitest.config.ts", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,28 @@
+---
+description: Project rules for App Compliance Scanner
+alwaysApply: true
+---
+
+# Project: App Compliance Scanner (risk screening, not legal advice)
+
+## What this is
+A SaaS that takes a website URL plus a short questionnaire, scans the site with a headless browser, matches findings to a versioned rules database, and produces a ranked report with evidence and fixes.
+
+## Stack
+- TypeScript, Node 20, pnpm monorepo
+- apps/web: Next.js (App Router) + Tailwind
+- services/scanner: Playwright + axe-core, runnable as a CLI and as a Lambda container image
+- packages/rules: YAML rule files, zod schema validation, and a pure-function rules engine
+- packages/shared: shared types (Scan, Finding, Issue, Answers, Rule)
+- infra: AWS CDK (TypeScript)
+- Data: DynamoDB, S3; Step Functions or SQS only if needed
+
+## Hard rules
+- Never write copy that says a site "is compliant" or gives legal advice. Use "risk indicators" and confidence levels.
+- Never hardcode legal penalty amounts or legal claims in code. They live only in packages/rules with source_url and last_verified. If last_verified is null, the UI shows "Not yet reviewed".
+- The LLM only explains findings. It never decides which rules apply. Rule matching is deterministic code.
+- Block SSRF: allow only http(s); reject private, loopback, link-local and cloud-metadata addresses; re-check after DNS resolution and after every redirect.
+- No secrets in code. Use env vars or Secrets Manager.
+- Validate all input with zod. Keep modules small, typed and tested.
+- Every finding has the shape { ruleId, confidence, evidence }.
+- Ask before adding a new dependency.
