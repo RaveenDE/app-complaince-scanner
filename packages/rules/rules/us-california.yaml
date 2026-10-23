@@ -1,0 +1,18 @@
+# US-California focused question items. last_verified stays null until reviewed.
+rules:
+  - id: fake-or-unverified-reviews
+    title: User reviews may be unverified
+    regimes: [US-California, US-federal]
+    applies_when:
+      regions: [US-CA, US-other]
+      flags: []
+    detect:
+      type: question
+      question_id: accepts_user_uploads_or_reviews
+    severity: medium
+    requirement: If people can leave reviews, it should be clear which ones are real and how you moderate them.
+    fix: Label reviews honestly and remove or flag fake or incentivized reviews.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null

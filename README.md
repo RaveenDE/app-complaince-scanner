@@ -8,7 +8,7 @@ Findings describe **likely** issues and **detected** indicators. They do not mea
 
 ## Status
 
-Stage 1: standalone scanner CLI. The rules engine, API, and report UI are not implemented yet.
+Stage 2: scanner CLI plus a deterministic rules engine. The API and report UI are not implemented yet.
 
 ## Requirements
 
@@ -36,8 +36,11 @@ Copy `.env.example` to `.env` if you need local environment variables. Do not co
 | `pnpm --filter @acs/web dev` | Start the Next.js placeholder app |
 | `pnpm browsers` | Install Chromium for the scanner (project-local `.playwright`) |
 | `pnpm scan -- <url> --region EU --out result.json --confirm-ownership` | Scan a site you own or are authorized to scan |
+| `pnpm evaluate -- --scan result.json --answers packages/rules/examples/answers.json` | Rank scan findings and questionnaire answers |
 
 `--confirm-ownership` is required. The CLI launches Chromium with a German locale and Europe/Berlin timezone, records requests and cookies without clicking, and writes a JSON result validated against the shared schema.
+
+`pnpm evaluate` matches that result and a questionnaire JSON to versioned YAML rules. Matching is deterministic code. An LLM never decides whether a rule applies. Rules with a null `last_verified` date show as **Not yet reviewed**. This is risk screening, not legal advice.
 
 ## Workspace
 
@@ -45,6 +48,6 @@ Copy `.env.example` to `.env` if you need local environment variables. Do not co
 | --- | --- | --- |
 | `apps/web` | `@acs/web` | Next.js UI (placeholder page in Stage 0) |
 | `services/scanner` | `@acs/scanner` | Headless-browser scanner CLI |
-| `packages/rules` | `@acs/rules` | Versioned rules and engine (stub) |
+| `packages/rules` | `@acs/rules` | Versioned YAML rules and evaluate engine |
 | `packages/shared` | `@acs/shared` | Shared types and zod schemas |
 | `infra` | `@acs/infra` | AWS CDK (stub) |

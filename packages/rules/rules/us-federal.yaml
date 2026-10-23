@@ -1,0 +1,119 @@
+# US-federal and accessibility items. Conservative applies_when; last_verified is null.
+rules:
+  - id: no-refund-link
+    title: No refund policy link detected
+    regimes: [US-federal, App stores]
+    applies_when:
+      regions: []
+      flags: [takes_payments]
+    detect:
+      type: scanner
+      scanner_rule: no-refund-link
+    severity: medium
+    requirement: If you take payments, a refund or cancellation policy should be easy to find.
+    fix: Add a refund or cancellation link near checkout and keep it accurate.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: accessibility-violations
+    title: Accessibility issues detected
+    regimes: [US-federal, General]
+    applies_when:
+      regions: []
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: accessibility-violations
+    severity: high
+    requirement: The page should work with common assistive tools such as a screen reader.
+    fix: Fix the axe-core issues in the evidence, starting with the highest impact.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: missing-alt-text
+    title: Images missing alt text
+    regimes: [US-federal, General]
+    applies_when:
+      regions: []
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: missing-alt-text
+    severity: medium
+    requirement: Images that convey meaning should have short alternative text.
+    fix: Add an alt attribute that describes the image, or mark decorative images with an empty alt.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: marketing-email-no-unsubscribe
+    title: Marketing email without a confirmed unsubscribe path
+    regimes: [US-federal]
+    applies_when:
+      regions: [US-other, US-CA]
+      flags: []
+    detect:
+      type: question
+      question_id: sends_marketing_email
+    severity: high
+    requirement: Marketing email should include a working unsubscribe path.
+    fix: Add one-click unsubscribe and honor it promptly.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: sms-without-optin
+    title: SMS marketing without confirmed opt-in
+    regimes: [US-federal]
+    applies_when:
+      regions: [US-other, US-CA]
+      flags: []
+    detect:
+      type: question
+      question_id: sends_sms
+    severity: high
+    requirement: Text messages that promote a product should only go to people who opted in.
+    fix: Collect express opt-in, keep proof, and stop texts when someone replies STOP.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: strike-through-pricing-unverified
+    title: Strike-through pricing is unverified
+    regimes: [US-federal]
+    applies_when:
+      regions: [US-other, US-CA]
+      flags: []
+    detect:
+      type: question
+      question_id: takes_payments
+    severity: medium
+    requirement: If you show a higher “was” price, that price should be a real recent price, not decoration.
+    fix: Only show comparison prices you can support, and drop fake discounts.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: dmca-agent-registered
+    title: DMCA agent registration (manual)
+    regimes: [US-federal]
+    applies_when:
+      regions: [US-other, US-CA]
+      flags: []
+    detect:
+      type: manual
+    severity: low
+    requirement: If users can upload content, a designated copyright agent is often expected in the US.
+    fix: Check whether you need a copyright agent and register one if you do. This is a manual check.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null

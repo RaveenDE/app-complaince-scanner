@@ -1,0 +1,52 @@
+# Policy-link rules also listed for US regimes. Primary file is UK.
+rules:
+  - id: no-privacy-link
+    title: No privacy policy link detected
+    regimes: [GDPR, UK, US-California, US-federal]
+    applies_when:
+      regions: [EU, UK, US-CA, US-other]
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: no-privacy-link
+    severity: high
+    requirement: A privacy policy should be easy to find from the site.
+    fix: Add a clearly labeled privacy policy link in the footer or sign-up flow.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: no-terms-link
+    title: No terms link detected
+    regimes: [GDPR, UK, US-California, US-federal]
+    applies_when:
+      regions: [EU, UK, US-CA, US-other]
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: no-terms-link
+    severity: medium
+    requirement: Terms of use should be easy to find before someone signs up or pays.
+    fix: Add a clearly labeled terms link near sign-up and checkout.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: no-cookie-policy-link
+    title: No cookie policy link detected
+    regimes: [GDPR, UK, US-California]
+    applies_when:
+      regions: [EU, UK, US-CA]
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: no-cookie-policy-link
+    severity: medium
+    requirement: If you use cookies or similar tools, a cookie notice or policy should be easy to find.
+    fix: Add a cookie policy link and describe what you use cookies for.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null

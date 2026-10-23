@@ -1,0 +1,16 @@
+{
+  "regions": ["EU", "UK"],
+  "collectsPersonalData": true,
+  "collectsLocationPhotosContacts": false,
+  "minorsCanUseApp": false,
+  "takesPayments": false,
+  "hasSubscriptions": false,
+  "sendsMarketingEmail": false,
+  "sendsSms": false,
+  "usesAnalyticsAdsOrSessionReplay": true,
+  "hasAiFeaturesOrChat": false,
+  "acceptsUserUploadsOrReviews": false,
+  "hasPrivacyPolicyToday": true,
+  "hasTermsToday": true,
+  "hasCookieBannerToday": false
+}

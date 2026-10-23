@@ -1,0 +1,68 @@
+# General screening items. last_verified stays null until a qualified person reviews them.
+rules:
+  - id: insecure-http
+    title: Site is not served over HTTPS
+    regimes: [General]
+    applies_when:
+      regions: []
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: insecure-http
+    severity: high
+    requirement: The live site should be served over HTTPS after redirects.
+    fix: Enable HTTPS and redirect all HTTP traffic to it.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: minors-no-age-gate
+    title: Minors can use the app without a described age gate
+    regimes: [General, US-federal, GDPR]
+    applies_when:
+      regions: []
+      flags: []
+    detect:
+      type: question
+      question_id: minors_can_use_app
+    severity: high
+    requirement: If children can use the app, you should have a clear age check and extra care for their data.
+    fix: Add an age gate and limit data collection for under-age users.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: ai-chat-no-self-harm-handling
+    title: AI chat without self-harm handling
+    regimes: [General, App stores]
+    applies_when:
+      regions: []
+      flags: []
+    detect:
+      type: question
+      question_id: has_ai_features_or_chat
+    severity: high
+    requirement: If you offer AI chat, it should not leave people in crisis without a safe response path.
+    fix: Add self-harm handling, refuse dangerous advice, and point to real help. This is screening, not a safety certificate.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: font-and-image-licenses
+    title: Font and image licenses (manual)
+    regimes: [General]
+    applies_when:
+      regions: []
+      flags: []
+    detect:
+      type: manual
+    severity: low
+    requirement: Fonts and images you ship should have a license that allows that use.
+    fix: Keep license files and replace anything you cannot show a right to use. This is a manual check.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null

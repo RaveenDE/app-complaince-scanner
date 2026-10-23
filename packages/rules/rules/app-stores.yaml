@@ -1,0 +1,34 @@
+# App-store oriented items. Not a certificate of store approval.
+rules:
+  - id: subscription-cancel-harder-than-signup
+    title: Subscription cancel may be harder than signup
+    regimes: [App stores, US-federal]
+    applies_when:
+      regions: []
+      flags: []
+    detect:
+      type: question
+      question_id: has_subscriptions
+    severity: high
+    requirement: Canceling a subscription should not be harder than starting one.
+    fix: Offer a cancel path that is as clear as the signup path, and say how billing works.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: trademark-conflict-check
+    title: Trademark conflict check (manual)
+    regimes: [App stores, General]
+    applies_when:
+      regions: []
+      flags: []
+    detect:
+      type: manual
+    severity: low
+    requirement: The app name and branding should not look like someone else’s mark.
+    fix: Search for similar names and marks before you ship. This is a manual check.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null

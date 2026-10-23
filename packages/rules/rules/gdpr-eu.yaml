@@ -1,0 +1,105 @@
+# Primary GDPR / EU rules. Cross-listed regimes are conservative guesses.
+# TODO: confirm ePrivacy / transfer details with a qualified reviewer before setting last_verified.
+rules:
+  - id: trackers-before-consent
+    title: Trackers detected before consent
+    regimes: [GDPR, UK]
+    applies_when:
+      regions: [EU, UK]
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: trackers-before-consent
+    severity: high
+    requirement: Third-party analytics or advertising requests should not fire before the visitor has a real choice.
+    fix: Block tracker scripts until the visitor accepts, or drop them entirely.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: cookies-before-consent
+    title: Cookies set before consent
+    regimes: [GDPR, UK]
+    applies_when:
+      regions: [EU, UK]
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: cookies-before-consent
+    severity: high
+    requirement: Cookies that are not strictly necessary should wait until the visitor has a real choice.
+    fix: Set non-essential cookies only after an affirmative choice, and list what each cookie does.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: google-fonts-remote
+    title: Fonts loaded from Google's servers
+    regimes: [GDPR, UK]
+    applies_when:
+      regions: [EU, UK]
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: google-fonts-remote
+    severity: medium
+    # TODO: confirm current transfer-risk guidance before setting last_verified.
+    requirement: Loading fonts from a third-party CDN can send visitor data outside your control before consent.
+    fix: Self-host the font files and serve them from your own domain.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: session-replay-detected
+    title: Session replay detected before consent
+    regimes: [GDPR, UK]
+    applies_when:
+      regions: [EU, UK]
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: session-replay-detected
+    severity: high
+    requirement: Session-replay tools can record what people type and click. That should not start before a clear choice.
+    fix: Load session replay only after consent, mask inputs, and explain the tool in your privacy policy.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: no-consent-banner-detected
+    title: No consent banner detected
+    regimes: [GDPR, UK]
+    applies_when:
+      regions: [EU, UK]
+      flags: []
+    detect:
+      type: scanner
+      scanner_rule: no-consent-banner-detected
+    severity: medium
+    requirement: Visitors in the EU and UK should see a clear accept or reject choice before non-essential tracking.
+    fix: Add a consent banner that works for EU visitors and does not force accept to use the site.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: no-data-deletion-option
+    title: No data deletion option described
+    regimes: [GDPR, UK, US-California]
+    applies_when:
+      regions: [EU, UK, US-CA]
+      flags: []
+    detect:
+      type: question
+      question_id: collects_personal_data
+    severity: high
+    requirement: If you collect personal data, people should have a way to ask you to delete it.
+    fix: Add a working delete-my-data path and describe it in plain language.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
