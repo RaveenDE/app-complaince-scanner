@@ -8,7 +8,7 @@ Findings describe **likely** issues and **detected** indicators. They do not mea
 
 ## Status
 
-Stage 0 scaffold only. The scanner CLI, rules engine, API, and report UI are not implemented yet.
+Stage 1: standalone scanner CLI. The rules engine, API, and report UI are not implemented yet.
 
 ## Requirements
 
@@ -19,6 +19,7 @@ Stage 0 scaffold only. The scanner CLI, rules engine, API, and report UI are not
 
 ```bash
 pnpm install
+pnpm --filter @acs/scanner exec playwright install chromium
 ```
 
 Copy `.env.example` to `.env` if you need local environment variables. Do not commit secrets.
@@ -33,15 +34,16 @@ Copy `.env.example` to `.env` if you need local environment variables. Do not co
 | `pnpm typecheck` | Run `tsc --noEmit` in every package |
 | `pnpm format` | Format files with Prettier |
 | `pnpm --filter @acs/web dev` | Start the Next.js placeholder app |
+| `pnpm scan -- <url> --region EU --out result.json --confirm-ownership` | Scan a site you own or are authorized to scan |
 
-Scan, evaluate, and deploy commands will be added in later stages.
+`--confirm-ownership` is required. The CLI launches Chromium with a German locale and Europe/Berlin timezone, records requests and cookies without clicking, and writes a JSON result validated against the shared schema.
 
 ## Workspace
 
 | Path | Package | Role |
 | --- | --- | --- |
 | `apps/web` | `@acs/web` | Next.js UI (placeholder page in Stage 0) |
-| `services/scanner` | `@acs/scanner` | Headless-browser scanner (stub) |
+| `services/scanner` | `@acs/scanner` | Headless-browser scanner CLI |
 | `packages/rules` | `@acs/rules` | Versioned rules and engine (stub) |
 | `packages/shared` | `@acs/shared` | Shared types and zod schemas |
 | `infra` | `@acs/infra` | AWS CDK (stub) |

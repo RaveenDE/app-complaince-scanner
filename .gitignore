@@ -21,6 +21,11 @@ playwright-report
 blob-report
 playwright/.cache
 
+# Local scan output
+result.json
+result.png
+scan.png
+
 # OS / editor
 .DS_Store
 Thumbs.db

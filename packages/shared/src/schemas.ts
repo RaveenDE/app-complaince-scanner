@@ -44,18 +44,6 @@ export const CapturedRequestSchema = z.object({
 });
 export type CapturedRequest = z.infer<typeof CapturedRequestSchema>;
 
-export const ScanResultSchema = z.object({
-  url: z.string().min(1),
-  finalUrl: z.string().min(1),
-  title: z.string(),
-  findings: z.array(FindingSchema),
-  screenshotPath: z.string().optional(),
-  privacyPolicyText: z.string().optional(),
-  cookies: z.array(CapturedCookieSchema).optional(),
-  requests: z.array(CapturedRequestSchema).optional(),
-});
-export type ScanResult = z.infer<typeof ScanResultSchema>;
-
 export const RegionSchema = z.enum([
   "EU",
   "UK",
@@ -65,6 +53,19 @@ export const RegionSchema = z.enum([
   "Other",
 ]);
 export type Region = z.infer<typeof RegionSchema>;
+
+export const ScanResultSchema = z.object({
+  url: z.string().min(1),
+  finalUrl: z.string().min(1),
+  title: z.string(),
+  findings: z.array(FindingSchema),
+  screenshotPath: z.string().optional(),
+  privacyPolicyText: z.string().optional(),
+  cookies: z.array(CapturedCookieSchema).optional(),
+  requests: z.array(CapturedRequestSchema).optional(),
+  region: RegionSchema.optional(),
+});
+export type ScanResult = z.infer<typeof ScanResultSchema>;
 
 export const AnswersSchema = z.object({
   regions: z.array(RegionSchema).min(1),
