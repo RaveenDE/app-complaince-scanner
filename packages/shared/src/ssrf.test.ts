@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   assertSafeRedirectChain,
   assertSafeUrl,
+  cachedLookup,
   decodeEncodedIPv4,
   SsrfError,
 } from "./ssrf.js";
@@ -81,6 +82,19 @@ describe("assertSafeUrl", () => {
     const url = await assertSafeUrl("https://example.com/");
     expect(url.protocol).toBe("https:");
     expect(url.hostname).toBe("example.com");
+  });
+});
+
+describe("cachedLookup", () => {
+  it("calls the underlying lookup once per hostname", async () => {
+    let calls = 0;
+    const lookup = cachedLookup(async () => {
+      calls += 1;
+      return [{ address: "93.184.216.34", family: 4 }];
+    });
+    await lookup("example.com");
+    await lookup("example.com");
+    expect(calls).toBe(1);
   });
 });
 

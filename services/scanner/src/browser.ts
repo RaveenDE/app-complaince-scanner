@@ -1,6 +1,10 @@
 import "./browsers-path.js";
 import type { CapturedCookie, CapturedRequest } from "@acs/shared";
-import { assertSafeUrl, type SsrfOptions } from "@acs/shared/ssrf";
+import {
+  assertSafeUrl,
+  cachedLookup,
+  type SsrfOptions,
+} from "@acs/shared/ssrf";
 import {
   chromium,
   type Browser,
@@ -19,9 +23,16 @@ export type CapturedPage = {
 };
 
 async function gotoAndWait(page: Page, url: string): Promise<void> {
-  await page.goto(url, { waitUntil: "load", timeout: 60_000 });
+  // Require DOMContentLoaded only. Some sites never fire `load` (long-lived
+  // scripts, bot walls), which used to fail the whole scan at 60s.
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45_000 });
   try {
-    await page.waitForLoadState("networkidle", { timeout: 20_000 });
+    await page.waitForLoadState("load", { timeout: 20_000 });
+  } catch {
+    // Continue with the document we have.
+  }
+  try {
+    await page.waitForLoadState("networkidle", { timeout: 15_000 });
   } catch {
     // Many sites keep polling or analytics running and never reach network idle.
   }
@@ -32,18 +43,24 @@ export async function capturePage(
   url: string,
   ssrf: SsrfOptions = {},
 ): Promise<CapturedPage> {
+  const checks: SsrfOptions = {
+    ...ssrf,
+    lookup: cachedLookup(ssrf.lookup),
+  };
   const browser = await chromium.launch({ headless: true });
   try {
     const context = await browser.newContext({
       locale: "de-DE",
       timezoneId: "Europe/Berlin",
+      userAgent:
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     });
     const page = await context.newPage();
     const requests: CapturedRequest[] = [];
 
     await page.route("**/*", async (route) => {
       try {
-        await assertSafeUrl(route.request().url(), ssrf);
+        await assertSafeUrl(route.request().url(), checks);
         await route.continue();
       } catch {
         await route.abort("blockedbyclient");

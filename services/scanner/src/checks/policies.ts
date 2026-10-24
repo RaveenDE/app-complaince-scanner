@@ -19,12 +19,13 @@ const POLICY_RULES: Record<
   },
   cookie: {
     ruleId: "no-cookie-policy-link",
-    pattern: /cookie/,
+    pattern: /cookie|cookies/,
     label: "cookie policy",
   },
   refund: {
     ruleId: "no-refund-link",
-    pattern: /refund|widerruf|return policy|r[eé]tractation|cancellation/,
+    pattern:
+      /refund|widerruf|return policy|r[eé]tractation|cancellation|fulfillment|money[-\s]?back|\breturns\b/,
     label: "refund policy",
   },
 };
@@ -34,9 +35,65 @@ export type PolicyCheckResult = {
   privacyPolicyUrl?: string;
 };
 
-function matchesPolicy(kind: PolicyKind, text: string, href: string): boolean {
-  const pattern = POLICY_RULES[kind].pattern;
-  return pattern.test(text) || pattern.test(href);
+export function policyLinkMatches(
+  kind: PolicyKind,
+  text: string,
+  href: string,
+): boolean {
+  const haystack = `${text} ${href}`.toLowerCase();
+  return POLICY_RULES[kind].pattern.test(haystack);
+}
+
+function normalizePath(path: string): string {
+  if (path === "/") return "/";
+  return path.replace(/\/+$/, "") || "/";
+}
+
+export function scorePolicyLink(
+  kind: PolicyKind,
+  text: string,
+  href: string,
+  pageUrl: string,
+): number {
+  if (!policyLinkMatches(kind, text, href)) return -1;
+  const trimmed = href.trim();
+  if (!trimmed || trimmed === "#" || /^javascript:/i.test(trimmed)) return -1;
+  try {
+    const absolute = new URL(trimmed, pageUrl);
+    const page = new URL(pageUrl);
+    const path = absolute.pathname.toLowerCase();
+    let score = 1;
+    if (kind === "privacy") {
+      if (/privacy|datenschutz|privacidad|confidentialit/.test(path)) score += 20;
+      if (/\/legal\b|\/policies\b|\/policy\b/.test(path)) score += 8;
+    }
+    const samePage =
+      absolute.origin === page.origin &&
+      normalizePath(absolute.pathname) === normalizePath(page.pathname);
+    if (samePage && !absolute.hash) score -= 20;
+    return score;
+  } catch {
+    return -1;
+  }
+}
+
+export function pickPolicyUrl(
+  kind: PolicyKind,
+  links: Array<{ text: string; href: string }>,
+  pageUrl: string,
+): string | undefined {
+  let best: { url: string; score: number } | undefined;
+  for (const link of links) {
+    const score = scorePolicyLink(kind, link.text, link.href, pageUrl);
+    if (score <= 0) continue;
+    try {
+      const url = new URL(link.href, pageUrl).href;
+      if (!best || score > best.score) best = { url, score };
+    } catch {
+      continue;
+    }
+  }
+  return best?.url;
 }
 
 export async function checkPolicyLinks(
@@ -50,19 +107,9 @@ export async function checkPolicyLinks(
   );
 
   const found: Partial<Record<PolicyKind, string>> = {};
-  for (const link of links) {
-    let absolute: string;
-    try {
-      absolute = new URL(link.href, ctx.finalUrl).href;
-    } catch {
-      continue;
-    }
-    const haystack = `${link.text} ${link.href}`.toLowerCase();
-    for (const kind of Object.keys(POLICY_RULES) as PolicyKind[]) {
-      if (!found[kind] && matchesPolicy(kind, haystack, haystack)) {
-        found[kind] = absolute;
-      }
-    }
+  for (const kind of Object.keys(POLICY_RULES) as PolicyKind[]) {
+    const url = pickPolicyUrl(kind, links, ctx.finalUrl);
+    if (url) found[kind] = url;
   }
 
   const findings: Finding[] = [];

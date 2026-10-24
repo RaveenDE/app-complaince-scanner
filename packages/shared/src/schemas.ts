@@ -85,6 +85,16 @@ export const AnswersSchema = z.object({
 });
 export type Answers = z.infer<typeof AnswersSchema>;
 
+export const PolicyTopicSchema = z.enum([
+  "analytics",
+  "third_party",
+  "ai",
+  "children",
+  "retention",
+  "deletion",
+]);
+export type PolicyTopic = z.infer<typeof PolicyTopicSchema>;
+
 export const RuleDetectSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("scanner"),
@@ -96,6 +106,10 @@ export const RuleDetectSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("manual"),
+  }),
+  z.object({
+    type: z.literal("policy"),
+    policy_topic: PolicyTopicSchema,
   }),
 ]);
 export type RuleDetect = z.infer<typeof RuleDetectSchema>;
@@ -133,6 +147,7 @@ export const IssueSchema = z.object({
   evidence: EvidenceSchema,
   confidence: ConfidenceSchema,
   reviewStatus: ReviewStatusSchema,
+  explanation: z.string().optional(),
 });
 export type Issue = z.infer<typeof IssueSchema>;
 

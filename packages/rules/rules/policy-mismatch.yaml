@@ -1,0 +1,105 @@
+# Policy-vs-practice mismatches. Deterministic code emits these after quote checks.
+# The LLM never decides whether a rule applies. last_verified stays null until reviewed.
+# TODO: confirm disclosure wording with a qualified person before setting last_verified.
+rules:
+  - id: policy-analytics-unmentioned
+    title: Analytics detected, privacy policy does not mention analytics
+    regimes: [GDPR, UK, US-California]
+    applies_when:
+      regions: [EU, UK, US-CA]
+      flags: []
+    detect:
+      type: policy
+      policy_topic: analytics
+    severity: medium
+    requirement: If analytics or similar tools run on the site, the privacy policy should say so in plain language.
+    fix: Name the analytics tools you use, why you use them, and how someone can opt out if you offer that.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: policy-third-party-unmentioned
+    title: Third-party tools detected, privacy policy does not mention sharing
+    regimes: [GDPR, UK, US-California]
+    applies_when:
+      regions: [EU, UK, US-CA]
+      flags: []
+    detect:
+      type: policy
+      policy_topic: third_party
+    severity: medium
+    requirement: If third-party scripts run on the site, the privacy policy should say that other companies receive data.
+    fix: List the categories of third parties you use and what they receive.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: policy-ai-unmentioned
+    title: AI features present, privacy policy does not mention AI
+    regimes: [GDPR, UK, US-California]
+    applies_when:
+      regions: [EU, UK, US-CA]
+      flags: []
+    detect:
+      type: policy
+      policy_topic: ai
+    severity: medium
+    requirement: If people use AI features, the privacy policy should say that in plain language.
+    fix: Describe the AI feature, what input it sees, and whether a human reviews it.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: policy-children-unmentioned
+    title: Minors can use the app, privacy policy does not mention children
+    regimes: [GDPR, UK, US-California, US-federal]
+    applies_when:
+      regions: [EU, UK, US-CA, US-other]
+      flags: []
+    detect:
+      type: policy
+      policy_topic: children
+    severity: medium
+    requirement: If children or teens can use the product, the privacy policy should say how you treat their data.
+    fix: State the minimum age, what you collect from younger users, and how a parent can contact you.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: policy-retention-unmentioned
+    title: Personal data collected, privacy policy does not mention retention
+    regimes: [GDPR, UK, US-California]
+    applies_when:
+      regions: [EU, UK, US-CA]
+      flags: [collects_personal_data]
+    detect:
+      type: policy
+      policy_topic: retention
+    severity: medium
+    requirement: If you keep personal data, the privacy policy should say how long you keep it or what decides that.
+    fix: Add a retention section in plain language, even if the period varies by data type.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null
+
+  - id: policy-deletion-unmentioned
+    title: Personal data collected, privacy policy does not mention deletion rights
+    regimes: [GDPR, UK, US-California]
+    applies_when:
+      regions: [EU, UK, US-CA]
+      flags: [collects_personal_data]
+    detect:
+      type: policy
+      policy_topic: deletion
+    severity: medium
+    requirement: If you collect personal data, the privacy policy should say how someone can ask you to delete it.
+    fix: Describe a working delete-my-data path and how long you take to respond.
+    source_url: null
+    last_verified: null
+    reviewed_by: null
+    penalty_note: null

@@ -8,7 +8,7 @@ Findings describe **likely** issues and **detected** indicators. They do not mea
 
 ## Status
 
-Stage 4: scanner CLI, rules engine, local API, and a web report UI. PDF export uses a print stylesheet plus Playwright.
+Stage 5: scanner CLI, rules engine, local API, web report UI, and an optional LLM explain layer with a template fallback.
 
 ## Requirements
 
@@ -45,7 +45,7 @@ Copy `.env.example` to `.env` if you need local environment variables. Do not co
 
 `pnpm evaluate` matches that result and a questionnaire JSON to versioned YAML rules. Matching is deterministic code. An LLM never decides whether a rule applies. Rules with a null `last_verified` date show as **Not yet reviewed**. This is risk screening, not legal advice.
 
-`pnpm api` stores scan records under `.data/` (gitignored). `POST /scans` requires `ownerConfirmed: true`. The pipeline is SafetyCheck → Scan → Evaluate → Explain (passthrough) → Finalize. `ACS_ALLOW_PRIVATE_ADDRESSES=true` is for local fixture tests only; never set it in production.
+`pnpm api` stores scan records under `.data/` (gitignored). `POST /scans` requires `ownerConfirmed: true`. The pipeline is SafetyCheck → Scan → Evaluate → Explain → Finalize. Explain uses `OPENAI_API_KEY` when set; otherwise it fills plain-language text from the rule and evidence only. The model never decides whether a rule applies. Policy quotes are checked against the policy text before any mismatch issue is added. `ACS_ALLOW_PRIVATE_ADDRESSES=true` is for local fixture tests only; never set it in production.
 
 ```bash
 curl -s -X POST http://127.0.0.1:8787/scans \

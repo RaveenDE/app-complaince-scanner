@@ -1,8 +1,11 @@
 import { createServer } from "node:http";
 import { resolve } from "node:path";
+import { loadLocalEnv } from "./env.js";
 import { allowPrivateFromEnv, handleRequest } from "./app.js";
 import { runPipeline } from "./pipeline.js";
 import { LocalScanStore } from "./storage-local.js";
+
+loadLocalEnv();
 
 const port = Number(process.env.PORT ?? 8787);
 const dataDir = resolve(process.env.ACS_DATA_DIR ?? ".data");
@@ -62,4 +65,9 @@ server.listen(port, () => {
       "ACS_ALLOW_PRIVATE_ADDRESSES=true (test/local only; never set this in production).",
     );
   }
+  console.error(
+    process.env.OPENAI_API_KEY?.trim()
+      ? "Explain: OpenAI (OPENAI_API_KEY is set)."
+      : "Explain: template fallback (no OPENAI_API_KEY).",
+  );
 });

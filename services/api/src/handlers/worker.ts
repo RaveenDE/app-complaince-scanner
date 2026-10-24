@@ -1,7 +1,7 @@
 import { evaluate, loadRules } from "@acs/rules";
 import { ScanResultSchema, type Issue } from "@acs/shared";
 import { assertSafeUrl } from "@acs/shared/ssrf";
-import { explainIssues } from "../explain.js";
+import { runExplainStage } from "../explain.js";
 import { userSafeError } from "../errors.js";
 import {
   AwsScanStore,
@@ -48,7 +48,23 @@ export async function handler(event: WorkerEvent): Promise<WorkerEvent> {
       return { ...event, issues };
     }
     if (event.action === "explain") {
-      return { ...event, issues: explainIssues(event.issues ?? []) };
+      if (!event.findingsJson) {
+        return { ...event, issues: event.issues ?? [] };
+      }
+      const scanResult = ScanResultSchema.parse(JSON.parse(event.findingsJson));
+      let policyText = "";
+      if (event.policyTextKey) {
+        const object = await db.getObject(event.policyTextKey);
+        policyText = object?.body.toString("utf8") ?? "";
+      }
+      const issues = await runExplainStage({
+        issues: event.issues ?? [],
+        policyText,
+        scanResult,
+        answers: record.answers,
+        rules: await loadRules(),
+      });
+      return { ...event, issues };
     }
     await db.updateScan(event.scanId, {
       status: "done",

@@ -32,6 +32,14 @@ export function IssueCard({ issue }: { issue: Issue }) {
           Confidence {issue.confidence}
         </span>
       </div>
+      {issue.explanation ? (
+        <section className="mt-3">
+          <h4 className="text-sm font-semibold">In plain language</h4>
+          <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+            {issue.explanation}
+          </p>
+        </section>
+      ) : null}
       <section className="mt-3">
         <h4 className="text-sm font-semibold">What we found</h4>
         <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">

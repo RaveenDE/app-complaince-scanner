@@ -64,6 +64,25 @@ describe("review status", () => {
     expect(reviewStatusFromRule(rule)).toBe("not_yet_reviewed");
     expect(formatReviewStatus(rule.last_verified)).toBe(NOT_YET_REVIEWED_LABEL);
   });
+
+  it("accepts a policy-mismatch detect type", () => {
+    const rule = RuleSchema.parse({
+      id: "policy-analytics-unmentioned",
+      title: "Analytics detected, privacy policy does not mention analytics",
+      regimes: ["GDPR"],
+      applies_when: { regions: ["EU"], flags: [] },
+      detect: { type: "policy", policy_topic: "analytics" },
+      severity: "medium",
+      requirement: "If analytics run on the site, the privacy policy should say so.",
+      fix: "Name the analytics tools you use.",
+      source_url: null,
+      last_verified: null,
+      reviewed_by: null,
+      penalty_note: null,
+    });
+
+    expect(rule.detect).toEqual({ type: "policy", policy_topic: "analytics" });
+  });
 });
 
 describe("CreateScanRequest and Report", () => {

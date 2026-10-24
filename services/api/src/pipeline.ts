@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { evaluate, loadRules } from "@acs/rules";
 import { scan, SCAN_TIMEOUT_MS } from "@acs/scanner";
 import { assertSafeUrl } from "@acs/shared/ssrf";
-import { explainIssues } from "./explain.js";
+import { runExplainStage } from "./explain.js";
 import { userSafeError } from "./errors.js";
 import type { ScanStore } from "./storage.js";
 
@@ -56,9 +56,14 @@ export async function runPipeline(
       );
     }
 
-    const issues = explainIssues(
-      evaluate(record.answers, result, await loadRules()),
-    );
+    const rules = await loadRules();
+    const issues = await runExplainStage({
+      issues: evaluate(record.answers, result, rules),
+      policyText: result.privacyPolicyText ?? "",
+      scanResult: result,
+      answers: record.answers,
+      rules,
+    });
     const report = {
       issues,
       screenshotKey,

@@ -195,6 +195,21 @@ async function defaultLookup(
   return dnsLookup(hostname, { all: true, verbatim: true });
 }
 
+/** Cache DNS lookups for one scan so Playwright route checks stay fast. */
+export function cachedLookup(lookup: DnsLookup = defaultLookup): DnsLookup {
+  const cache = new Map<
+    string,
+    Promise<Array<{ address: string; family: number }>>
+  >();
+  return (hostname) => {
+    const hit = cache.get(hostname);
+    if (hit) return hit;
+    const pending = lookup(hostname);
+    cache.set(hostname, pending);
+    return pending;
+  };
+}
+
 export async function assertSafeRedirectChain(
   urls: string[],
   options: SsrfOptions = {},

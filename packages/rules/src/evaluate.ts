@@ -57,6 +57,9 @@ export function evaluate(
     if (!ruleApplies(rule, answers)) continue;
 
     const detect = rule.detect;
+    // Policy-mismatch rules are emitted later, after quote-checked policy comparison.
+    if (detect.type === "policy") continue;
+
     if (detect.type === "scanner") {
       const finding = scanResult.findings.find(
         (item) => item.ruleId === detect.scanner_rule,
@@ -93,7 +96,11 @@ export function evaluate(
     );
   }
 
-  return issues.sort((a, b) => {
+  return sortIssues(issues);
+}
+
+export function sortIssues(issues: Issue[]): Issue[] {
+  return [...issues].sort((a, b) => {
     const bySeverity =
       SEVERITY_RANK[a.rule.severity] - SEVERITY_RANK[b.rule.severity];
     if (bySeverity !== 0) return bySeverity;

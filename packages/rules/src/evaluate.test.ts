@@ -56,9 +56,9 @@ describe("evaluate", async () => {
   const rules = await loadRules();
   const byId = new Map(rules.map((rule) => [rule.id, rule]));
 
-  it("loads 23 unique starter rules", () => {
-    expect(rules).toHaveLength(23);
-    expect(new Set(rules.map((rule) => rule.id)).size).toBe(23);
+  it("loads 29 unique starter rules", () => {
+    expect(rules).toHaveLength(29);
+    expect(new Set(rules.map((rule) => rule.id)).size).toBe(29);
   });
 
   it("sorts issues by severity then confidence", () => {
@@ -113,6 +113,10 @@ describe("evaluate", async () => {
       });
 
       it("match", () => {
+        if (rule.detect.type === "policy") {
+          expect(hasIssue(rules, rule.id, applicable, [])).toBe(false);
+          return;
+        }
         const findings =
           rule.detect.type === "scanner" ? [finding(rule.detect.scanner_rule)] : [];
         expect(hasIssue(rules, rule.id, applicable, findings)).toBe(true);

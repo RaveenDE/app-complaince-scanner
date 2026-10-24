@@ -62,7 +62,7 @@ export class AppComplianceStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       architecture: Architecture.X86_64,
       handler: "index.handler",
-      timeout: Duration.seconds(60),
+      timeout: Duration.seconds(120),
       memorySize: 1024,
       code: Code.fromAsset(join(repoRoot, "infra/lambda-assets/worker")),
       environment: {
@@ -128,6 +128,7 @@ export class AppComplianceStack extends Stack {
         action: "explain",
         scanId: JsonPath.stringAt("$.scanId"),
         issues: JsonPath.objectAt("$.issues"),
+        findingsJson: JsonPath.stringAt("$.findingsJson"),
         screenshotKey: JsonPath.stringAt("$.screenshotKey"),
         policyTextKey: JsonPath.stringAt("$.policyTextKey"),
       }),

@@ -6,15 +6,11 @@ import {
   type Region,
   type ScanResult,
 } from "@acs/shared";
-import {
-  assertSafeUrl,
-  fetchFollowingRedirects,
-  type SsrfOptions,
-} from "@acs/shared/ssrf";
+import { assertSafeUrl, type SsrfOptions } from "@acs/shared/ssrf";
 import { capturePage } from "./browser.js";
 import { runChecks } from "./checks/index.js";
+import { readPrivacyPolicyText } from "./privacy-text.js";
 
-const PRIVACY_POLICY_MAX_BYTES = 100 * 1024;
 export const SCAN_TIMEOUT_MS = 120_000;
 
 export type ScanOptions = SsrfOptions & {
@@ -22,15 +18,6 @@ export type ScanOptions = SsrfOptions & {
   screenshotPath?: string;
   timeoutMs?: number;
 };
-
-async function fetchPrivacyPolicyText(
-  url: string,
-  ssrf: SsrfOptions,
-): Promise<string | undefined> {
-  const response = await fetchFollowingRedirects(url, ssrf);
-  const text = await response.text();
-  return text.slice(0, PRIVACY_POLICY_MAX_BYTES);
-}
 
 async function scanOnce(
   url: string,
@@ -63,7 +50,8 @@ async function scanOnce(
     let privacyPolicyText: string | undefined;
     if (policy.privacyPolicyUrl) {
       try {
-        privacyPolicyText = await fetchPrivacyPolicyText(
+        privacyPolicyText = await readPrivacyPolicyText(
+          captured.page,
           policy.privacyPolicyUrl,
           options,
         );
