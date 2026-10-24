@@ -40,6 +40,21 @@ export default function RootLayout({
           </div>
         </header>
         <div id="main">{children}</div>
+        <footer className="no-print border-t border-zinc-200 dark:border-zinc-800">
+          <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-4 px-6 py-4 text-sm">
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Draft legal pages — to be lawyer-reviewed.
+            </p>
+            <nav className="flex items-center gap-3" aria-label="Legal">
+              <Link className="underline" href="/privacy">
+                Privacy policy
+              </Link>
+              <Link className="underline" href="/terms">
+                Terms of use
+              </Link>
+            </nav>
+          </div>
+        </footer>
       </body>
     </html>
   );

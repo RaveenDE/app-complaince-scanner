@@ -8,7 +8,7 @@ Findings describe **likely** issues and **detected** indicators. They do not mea
 
 ## Status
 
-Stage 5: scanner CLI, rules engine, local API, web report UI, and an optional LLM explain layer with a template fallback.
+Stage 6 / Phase 1: scanner CLI, rules engine, local API, web report UI, optional LLM explain layer with a template fallback, draft product legal pages, and docs for local setup, rules review, and CDK deploy.
 
 ## Requirements
 
@@ -56,7 +56,42 @@ curl -s http://127.0.0.1:8787/scans/<id>
 
 The web UI is at `http://127.0.0.1:3000`. Start `pnpm api` in another terminal first. For a local fixture scan set `ACS_ALLOW_PRIVATE_ADDRESSES=true` on the API, run `pnpm fixture -- bad-site`, and paste that URL into `/scan/new`. Download PDF from the report page.
 
-`pnpm --filter @acs/infra synth` writes a CloudFormation template to `cdk.out`. It does not deploy.
+Draft product **Privacy policy** and **Terms of use** live at `/privacy` and `/terms`. Both are marked for lawyer review.
+
+## Add or review a rule
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). The first rule there is: rules must be verified against official sources by a qualified person before `last_verified` is set.
+
+- Add YAML under `packages/rules/rules/`. `evaluate()` plus the YAML decide whether a rule applies. An LLM never does.
+- Keep `last_verified`, `reviewed_by`, `source_url`, and `penalty_note` **null** until that review. The report then shows **Not yet reviewed**.
+- After review, set `last_verified` to `YYYY-MM-DD`, `reviewed_by` to a name and role, and `source_url` to the official page. The report shows **Last verified YYYY-MM-DD**. Never invent penalty amounts.
+
+## Deploy with CDK
+
+`pnpm synth` (or `pnpm --filter @acs/infra synth`) writes a CloudFormation template to `infra/cdk.out`. It does not deploy.
+
+The stack is API Gateway, API/worker Lambdas, the scanner container image, Step Functions, DynamoDB, and S3. It does **not** deploy the Next.js UI and does **not** wire `OPENAI_API_KEY` or other secrets.
+
+Prerequisites: AWS credentials for the target account, Docker (the scanner image builds Chromium), and a one-time `cdk bootstrap` in that account/region.
+
+```bash
+pnpm synth
+cd infra
+npx cdk deploy
+```
+
+A live AWS deploy and Lambda scan have not been verified in this repo. Treat `cdk synth` as the checked path.
+
+## Known gaps
+
+Quality gate for this Stage 6 pass: `pnpm test`, `pnpm lint`, and `pnpm typecheck` all passed.
+
+- Every bundled rule still has `last_verified: null`.
+- Several high-severity items are questionnaire-only (including `subscription-cancel-harder-than-signup`) and do not inspect signup or cancel UI.
+- Policy-mismatch rules run only when captured text looks like a privacy policy. Homepage or SPA shell HTML is treated as unknown, not as a silent policy.
+- The CDK stack does not host `apps/web` and does not store an OpenAI secret.
+- Scan IDs are unauthenticated: anyone with the id can fetch the report.
+- `ACS_ALLOW_PRIVATE_ADDRESSES=true` is for local fixtures only.
 
 ## Workspace
 
